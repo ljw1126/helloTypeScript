@@ -13,6 +13,8 @@ export class BaseComponent<T extends HTMLElement> implements Component {
     }
 
     attachTo(parent: HTMLElement, position: InsertPosition = 'afterbegin') {
+        console.log(parent);
+        console.log(`position : ${position}`);
         parent.insertAdjacentElement(position, this.element);
     }
 }
