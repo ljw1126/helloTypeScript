@@ -18,7 +18,7 @@ export class PageItemComponent extends BaseComponent<HTMLElement> implements Sec
     private closeListener?: OnCloseListener;
 
     constructor() {
-        super(`<li class="page-item">
+        super(`<li draggable="true" class="page-item">
             <section class="page-item__body"></section>
             <div class="page-item__controls">
               <button class="close">&times;</button>
@@ -27,8 +27,24 @@ export class PageItemComponent extends BaseComponent<HTMLElement> implements Sec
 
           const closeBtn = this.element.querySelector('.close')! as HTMLButtonElement;
           closeBtn.onclick = () => {
-            this.closeListener && this.closeListener(); // null이 아니라면 호출
+            this.closeListener && this.closeListener();
           }
+
+          this.element.addEventListener('dragstart', (event: DragEvent) => {
+                this.onDragStart(event);
+          });
+
+          this.element.addEventListener('dragend', (event: DragEvent) => {
+                this.onDragEnd(event);
+          });
+    }
+
+    onDragStart(event: DragEvent) {
+        console.log('dragstart', event);
+    }
+
+    onDragEnd(event: DragEvent) {
+        console.log('dragend', event);
     }
 
     addChild(child: Component) {
@@ -44,6 +60,24 @@ export class PageItemComponent extends BaseComponent<HTMLElement> implements Sec
 export class PageComponent extends BaseComponent<HTMLUListElement> implements Composable {
     constructor(private pageItemConstructor: SectionContainerConstructor) {
         super('<ul class="page"></ul>');
+
+        this.element.addEventListener('dragover', (event: DragEvent) => {
+            this.onDragOver(event);
+        });
+
+        this.element.addEventListener('drop', (event: DragEvent) => {
+            this.onDrop(event);
+        });
+    }
+
+    onDragOver(event: DragEvent) {
+        event.preventDefault();
+        console.log('onDragOver');
+    }
+
+    onDrop(event: DragEvent) {
+        event.preventDefault();
+        console.log('onDrop', event);
     }
 
     addChild(section: Component) {
