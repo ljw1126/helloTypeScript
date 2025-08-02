@@ -14,8 +14,6 @@ function Log(_:any, name: string, descriptor: PropertyDescriptor): PropertyDescr
   return newDescriptor;
 }
 
-
-
 class Calculator {
   @Log
   add(x: number, y: number): number {

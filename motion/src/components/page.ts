@@ -1,14 +1,15 @@
+import { Draggable, Droppable, EnableDragging, EnableDrop, EnableHover, Hoverable } from "../decorators/draggable.js";
 import { BaseComponent, Component } from "./component.js";
 
 export interface Composable {
-    addChild(child: Component): void;
+        addChild(child: Component): void;
 }
 
 type OnCloseListener = () => void;
 type DragState = 'start' | 'stop' | 'enter' | 'leave';
 type OnDragStateListener<T extends Component> = (target: T, state: DragState) => void;
 
-interface SectionContainer extends Component, Composable {
+interface SectionContainer extends Component, Composable, Draggable, Hoverable{
     setOnCloseListener(listener: OnCloseListener): void;
     setOnDragStateListener(listener: OnDragStateListener<SectionContainer>): void;
     muteChildren(state: 'mute' | 'unmute'): void;
@@ -18,13 +19,17 @@ interface SectionContainer extends Component, Composable {
 
 type SectionContainerConstructor = {
     new (): SectionContainer;
-}
+};
 
+
+@EnableDragging
+@EnableHover
 export class PageItemComponent extends BaseComponent<HTMLElement> implements SectionContainer {
     private closeListener?: OnCloseListener;
     private dragStateListener?: OnDragStateListener<PageItemComponent>;
 
     constructor() {
+        console.log('page item component constructor');
         super(`<li draggable="true" class="page-item">
             <section class="page-item__body"></section>
             <div class="page-item__controls">
@@ -34,24 +39,8 @@ export class PageItemComponent extends BaseComponent<HTMLElement> implements Sec
 
         const closeBtn = this.element.querySelector('.close')! as HTMLButtonElement;
         closeBtn.onclick = () => {
-        this.closeListener && this.closeListener();
+            this.closeListener && this.closeListener();
         }
-
-        this.element.addEventListener('dragstart', (event: DragEvent) => {
-            this.onDragStart(event);
-        });
-
-        this.element.addEventListener('dragend', (event: DragEvent) => {
-            this.onDragEnd(event);
-        });
-
-        this.element.addEventListener('dragenter', (event: DragEvent) => {
-            this.onDragEnter(event);
-        });
-
-        this.element.addEventListener('dragleave', (event: DragEvent) => {
-            this.onDragLeave(event);
-        });
     }
 
     onDragStart(_: DragEvent) {
@@ -108,31 +97,21 @@ export class PageItemComponent extends BaseComponent<HTMLElement> implements Sec
     }
 }
 
-export class PageComponent extends BaseComponent<HTMLUListElement> implements Composable {
+@EnableDrop
+export class PageComponent extends BaseComponent<HTMLUListElement> implements Composable, Droppable {
     private children = new Set<SectionContainer>();
     private dragTarget?: SectionContainer;
     private dropTarget?: SectionContainer;
 
     constructor(private pageItemConstructor: SectionContainerConstructor) {
         super('<ul class="page"></ul>');
-
-        this.element.addEventListener('dragover', (event: DragEvent) => {
-            this.onDragOver(event);
-        });
-
-        this.element.addEventListener('drop', (event: DragEvent) => {
-            this.onDrop(event);
-        });
     }
 
-    onDragOver(event: DragEvent) {
-        event.preventDefault();
+    onDragOver(_: DragEvent) {
         console.log('onDragOver');
     }
 
     onDrop(event: DragEvent) {
-        event.preventDefault();
-
         if(!this.dropTarget) {
             return;
         }
