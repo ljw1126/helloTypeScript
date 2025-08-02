@@ -32,18 +32,18 @@ export class PageItemComponent extends BaseComponent<HTMLElement> implements Sec
             </div>
           </li>`);
 
-          const closeBtn = this.element.querySelector('.close')! as HTMLButtonElement;
-          closeBtn.onclick = () => {
-            this.closeListener && this.closeListener();
-          }
+        const closeBtn = this.element.querySelector('.close')! as HTMLButtonElement;
+        closeBtn.onclick = () => {
+        this.closeListener && this.closeListener();
+        }
 
-          this.element.addEventListener('dragstart', (event: DragEvent) => {
-                this.onDragStart(event);
-          });
+        this.element.addEventListener('dragstart', (event: DragEvent) => {
+            this.onDragStart(event);
+        });
 
-          this.element.addEventListener('dragend', (event: DragEvent) => {
-                this.onDragEnd(event);
-          });
+        this.element.addEventListener('dragend', (event: DragEvent) => {
+            this.onDragEnd(event);
+        });
 
         this.element.addEventListener('dragenter', (event: DragEvent) => {
             this.onDragEnter(event);
@@ -74,7 +74,7 @@ export class PageItemComponent extends BaseComponent<HTMLElement> implements Sec
         this.element.classList.remove('drop-area');
     }
 
-    notifyDragObservers(state: DragState) {
+    notifyDragObservers(state: DragState) { // PageComponent한테 이벤트 전파
         this.dragStateListener && this.dragStateListener(this, state);
     }
 
